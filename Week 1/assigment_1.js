@@ -2,8 +2,17 @@
 
 var gl;
 var points = [];
-var NumTimesToSubdivide = 5;
-var TwistAngle = 0.9;
+var NumTimesToSubdivide = 0;
+var TwistAngle = 0;
+
+/* initial triangle */
+var vertices = [
+	vec2(-0.5,-0.5),
+	vec2(0,0.5),
+	vec2(0.5,-0.5)
+];
+
+var bufferId;
 
 window.onload = function init()
 {
@@ -12,12 +21,8 @@ window.onload = function init()
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 	
-	/* initial triangle */
-	var vertices = [
-		vec2(-0.5,-0.5),
-		vec2(0,0.5),
-		vec2(0.5,-0.5)
-	];
+	NumTimesToSubdivide = parseInt(document.getElementById( "divisionSlider" ).value);
+	TwistAngle = document.getElementById( "twistSlider" ).value;
 	
 	divideTriangle(vertices[0],vertices[1],vertices[2],NumTimesToSubdivide)
 	
@@ -33,7 +38,7 @@ window.onload = function init()
 
     // Load the data into the GPU
 
-    var bufferId = gl.createBuffer();
+    bufferId = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
 
@@ -44,12 +49,29 @@ window.onload = function init()
     gl.enableVertexAttribArray( vPosition );
 
     render();
+	
+	document.getElementById( "twistSlider" ).onchange = function () {
+		TwistAngle = document.getElementById( "twistSlider" ).value;
+		updateData();
+    };
+	
+	document.getElementById( "divisionSlider" ).onchange = function () {
+		NumTimesToSubdivide = parseInt(document.getElementById( "divisionSlider" ).value);
+		updateData();
+    };
 };
 
+function updateData(){
+	points = [];
+	divideTriangle(vertices[0],vertices[1],vertices[2],NumTimesToSubdivide)
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.DYNAMIC_DRAW );
+}
 
 function render() {
-    gl.clear( gl.COLOR_BUFFER_BIT );
-    gl.drawArrays( gl.TRIANGLES, 0, points.length );
+     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	 gl.drawArrays( gl.TRIANGLES, 0, points.length );
+	
+	requestAnimFrame(render);
 }
 
 function triangle(a,b,c){
