@@ -50,12 +50,12 @@ window.onload = function init()
 
     render();
 	
-	document.getElementById( "twistSlider" ).onchange = function () {
+	document.getElementById( "twistSlider" ).oninput = function () {
 		TwistAngle = document.getElementById( "twistSlider" ).value;
 		updateData();
     };
 	
-	document.getElementById( "divisionSlider" ).onchange = function () {
+	document.getElementById( "divisionSlider" ).oninput = function () {
 		NumTimesToSubdivide = parseInt(document.getElementById( "divisionSlider" ).value);
 		updateData();
     };
