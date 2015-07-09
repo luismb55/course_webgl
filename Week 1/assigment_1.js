@@ -5,12 +5,22 @@ var points = [];
 var NumTimesToSubdivide = 0;
 var TwistAngle = 0;
 
-/* initial triangle */
-var vertices = [
-	vec2(-0.5,-0.5),
-	vec2(0,0.5),
-	vec2(0.5,-0.5)
+var singleTriangle = [
+	[ vec2(-0.5,-0.5), vec2(0,0.5), vec2(0.5,-0.5)]
 ];
+
+var square = [
+	[ vec2(-0.5,-0.5), vec2(-0.5,0.5), vec2(0.5,0.5)],
+	[ vec2(-0.5,-0.5), vec2(0.5,0.5), vec2(0.5,-0.5)]
+];
+
+var pentagon = [
+	[ vec2(-0.35,-0.35), vec2(-0.5,0.35), vec2(0,0.75)],
+	[ vec2(-0.35,-0.35), vec2(0,0.75), vec2(0.5,0.35)],
+	[ vec2(-0.35,-0.35), vec2(0.5,0.35), vec2(0.35,-0.35)]
+];
+
+var sourceArray = singleTriangle;
 
 var bufferId;
 
@@ -24,7 +34,11 @@ window.onload = function init()
 	NumTimesToSubdivide = parseInt(document.getElementById( "divisionSlider" ).value);
 	TwistAngle = document.getElementById( "twistSlider" ).value;
 	
-	divideTriangle(vertices[0],vertices[1],vertices[2],NumTimesToSubdivide)
+	//divideTriangle(singleTriangle[0][0],singleTriangle[0][1],singleTriangle[0][2],NumTimesToSubdivide)
+	
+	for (var i = 0; i < sourceArray.length; i++) {
+    	divideTriangle(sourceArray[i][0],sourceArray[i][1],sourceArray[i][2],NumTimesToSubdivide)
+	}
 	
     //  Configure WebGL
 
@@ -59,11 +73,35 @@ window.onload = function init()
 		NumTimesToSubdivide = parseInt(document.getElementById( "divisionSlider" ).value);
 		updateData();
     };
+    
+    document.getElementById( "triangleBtn" ).onclick = function () {
+    	if(sourceArray != singleTriangle){
+			sourceArray = singleTriangle;
+			updateData();
+		}
+    };
+	
+	document.getElementById( "squareBtn" ).onclick = function () {
+    	if(sourceArray != square){
+			sourceArray = square;
+			updateData();
+		}
+    };
+    
+    document.getElementById( "pentagonBtn" ).onclick = function () {
+    	if(sourceArray != pentagon){
+			sourceArray = pentagon;
+			updateData();
+		}
+    };
 };
 
 function updateData(){
 	points = [];
-	divideTriangle(vertices[0],vertices[1],vertices[2],NumTimesToSubdivide)
+	//divideTriangle(singleTriangle[0][0],singleTriangle[0][1],singleTriangle[0][2],NumTimesToSubdivide)
+	for (var i = 0; i < sourceArray.length; i++) {
+    	divideTriangle(sourceArray[i][0],sourceArray[i][1],sourceArray[i][2],NumTimesToSubdivide)
+	}
 	gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.DYNAMIC_DRAW );
 }
 
